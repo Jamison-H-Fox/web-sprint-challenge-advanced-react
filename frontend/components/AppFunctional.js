@@ -64,34 +64,33 @@ export default function AppFunctional(props) {
     // this helper should return the current index unchanged.
     if (direction === 'UP') {
       if (index < 3) {
-        (setMessage(`You can't go Up`))
+        (setMessage(`You can't go up`))
       } else {
         setIndex(index - 3);
         setStepCounter(stepCounter + 1)
         }
     } else if (direction === 'DOWN') {
       if(index > 5) {
-        setMessage(`You can't go Down`)
+        setMessage(`You can't go down`)
       } else {
         setIndex(index + 3);
         setStepCounter(stepCounter + 1)
         }
     } else if (direction === "LEFT") {
       if(index % 3 === 0){        
-        setMessage(`You can't go Left`)
+        setMessage(`You can't go left`)
       } else {
         setIndex(index - 1);
         setStepCounter(stepCounter + 1)
         }
     } else if (direction === 'RIGHT') {
       if(index % 3 === 2){        
-        setMessage(`You can't go Right`)
+        setMessage(`You can't go right`)
       } else {
         setIndex(index + 1);
         setStepCounter(stepCounter + 1)
         }
     }
-
   }
 
   function move(evt) {
@@ -117,7 +116,8 @@ export default function AppFunctional(props) {
         setEmail(initialEmail);
       })
       .catch(err => {
-        console.error(err)
+        setMessage(err.response.data.message);
+        setEmail(initialEmail);
       })
   }
 
