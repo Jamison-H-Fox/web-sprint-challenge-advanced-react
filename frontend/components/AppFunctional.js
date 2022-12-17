@@ -10,6 +10,8 @@ export default function AppFunctional(props) {
   // State declarations
   const [index, setIndex] = useState(initialIndex);
   const [stepCounter, setStepCounter] = useState(initialSteps);
+  const [email, setEmail] = useState(initialEmail);
+  const [message, setMessage] = useState(initialMessage);
 
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
@@ -38,32 +40,52 @@ export default function AppFunctional(props) {
     return coords
   }
 
-  function getXYMessage(cb) {
+  function getXYMessage() {
     // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
     // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
     // returns the fully constructed string.
-    const x = cb[0];
-    const y = cb[1];
+    const coords = getXY(index);
 
-    const msgString = `Coordinates (${x}, ${y})`;
+    const msgString = `Coordinates (${coords[0]}, ${coords[1]})`;
     return msgString;
   }
 
   function reset() {
     setIndex(initialIndex);
     setStepCounter(initialSteps);
+    setMessage(initialMessage);
   }
 
   function getNextIndex(direction) {
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
-    
+    if (direction === 'UP') {
+      if (index < 3) {
+        (setMessage(`You can't go Up`))
+      } else (setIndex(index - 3))
+    } else if (direction === 'DOWN') {
+      if(index > 5) {
+        setMessage(`You can't go Down`)
+      } else (setIndex(index + 3))
+    } else if (direction === "LEFT") {
+      if(index % 3 === 0){        
+        setMessage(`You can't go Left`)
+      } else (setIndex(index - 1))
+    } else if (direction === 'RIGHT') {
+      if(index % 3 === 2){        
+        setMessage(`You can't go Right`)
+      } else (setIndex(index + 1))
+    }
+
   }
 
   function move(evt) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
+    const direction = evt.target.textContent;
+
+    getNextIndex(direction);    
     setStepCounter(stepCounter + 1);
   }
 
@@ -78,20 +100,20 @@ export default function AppFunctional(props) {
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">{getXYMessage(getXY(index))}</h3>
+        <h3 id="coordinates">{getXYMessage()}</h3>
         <h3 id="steps">You moved {stepCounter} time{stepCounter == 1 ? '' : 's'}</h3>
       </div>
       <div id="grid">
         {
           [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-            <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-              {idx === 4 ? 'B' : null}
+            <div key={idx} className={`square${idx === index ? ' active' : ''}`}>
+              {idx === index ? 'B' : ''}
             </div>
           ))
         }
       </div>
       <div className="info">
-        <h3 id="message">Message will go here</h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
         <button onClick={(evt) => move(evt)} id="left">LEFT</button>
