@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import axios from 'axios';
 
 // Suggested initial states
 const initialMessage = ''
@@ -54,6 +55,7 @@ export default function AppFunctional(props) {
     setIndex(initialIndex);
     setStepCounter(initialSteps);
     setMessage(initialMessage);
+    setEmail(initialEmail);
   }
 
   function getNextIndex(direction) {
@@ -63,19 +65,31 @@ export default function AppFunctional(props) {
     if (direction === 'UP') {
       if (index < 3) {
         (setMessage(`You can't go Up`))
-      } else (setIndex(index - 3))
+      } else {
+        setIndex(index - 3);
+        setStepCounter(stepCounter + 1)
+        }
     } else if (direction === 'DOWN') {
       if(index > 5) {
         setMessage(`You can't go Down`)
-      } else (setIndex(index + 3))
+      } else {
+        setIndex(index + 3);
+        setStepCounter(stepCounter + 1)
+        }
     } else if (direction === "LEFT") {
       if(index % 3 === 0){        
         setMessage(`You can't go Left`)
-      } else (setIndex(index - 1))
+      } else {
+        setIndex(index - 1);
+        setStepCounter(stepCounter + 1)
+        }
     } else if (direction === 'RIGHT') {
       if(index % 3 === 2){        
         setMessage(`You can't go Right`)
-      } else (setIndex(index + 1))
+      } else {
+        setIndex(index + 1);
+        setStepCounter(stepCounter + 1)
+        }
     }
 
   }
@@ -86,15 +100,25 @@ export default function AppFunctional(props) {
     const direction = evt.target.textContent;
 
     getNextIndex(direction);    
-    setStepCounter(stepCounter + 1);
   }
 
-  function onChange(evt) {
+  function handleChange(evt) {
     // You will need this to update the value of the input.
+    const newEmail = evt.target.value;
+    setEmail(newEmail);
   }
 
-  function onSubmit(evt) {
+  function handleSubmit(evt) {
     // Use a POST request to send a payload to the server.
+    evt.preventDefault();
+    axios.post(`http://localhost:9000/api/result`, {'x': getXY(index)[0], 'y': getXY(index)[1], 'steps': stepCounter, 'email': email})
+      .then(res => {
+        setMessage(res.data.message);
+        setEmail(initialEmail);
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 
   return (
@@ -123,8 +147,18 @@ export default function AppFunctional(props) {
         <button onClick={() => reset()} id="reset">reset</button>
       </div>
       <form>
-        <input id="email" type="email" placeholder="type email"></input>
-        <input id="submit" type="submit"></input>
+        <input 
+          id="email" 
+          type="email" 
+          placeholder="type email"
+          value={email}
+          onChange={(evt) => handleChange(evt)}
+        ></input>
+        <input 
+          id="submit" 
+          type="submit"
+          onClick={(evt) => handleSubmit(evt)}
+        ></input>
       </form>
     </div>
   )
